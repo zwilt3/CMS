@@ -49,6 +49,13 @@ public class Course implements Serializable{
 		return name;
 	}	
 	
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof Course)) return false;
+		Course that = (Course)o;
+		return this.id.equals(that.id);
+	}
+	
 	/*
 	 * Getters and setters below.
 	 */

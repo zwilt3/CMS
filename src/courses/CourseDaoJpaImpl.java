@@ -1,5 +1,6 @@
 package courses;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -8,6 +9,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 import users.User;
+import users.UserDao;
+import users.UserDaoJpaImpl;
 
 public class CourseDaoJpaImpl implements CourseDao{
 
@@ -32,16 +35,21 @@ public class CourseDaoJpaImpl implements CourseDao{
 		em.close();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public Course getCourse(long courseId){
 		EntityManager em = factory.createEntityManager();
+		Course course =  getCourse(courseId, em);
+		em.close();
+		return course;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Course getCourse(long courseId, EntityManager em){
 		Query q = em.createQuery("SELECT c from Course AS c where c.id = :courseId");
 		q.setParameter("courseId", courseId);
 		List<Course> courses = q.getResultList();
-		em.close();
 		if (courses.size() != 1){
-			throw new RuntimeException("Could not find course with id " + courseId + ".");
+			return null;
 		}
 		return courses.get(0);
 	}
@@ -56,13 +64,32 @@ public class CourseDaoJpaImpl implements CourseDao{
 	}
 	
 	@Override
+	public void enrollUsers(Course course, List<User> newUsers){
+		enrollUsers(course.getId(), newUsers);
+		course.getEnrolledUsers().addAll(newUsers);
+	}
+	
+	@Override
 	public void enrollUsers(long courseId, List<User> newUsers) {
-		Course course = getCourse(courseId);
 		EntityManager em = factory.createEntityManager();
+		Course course = getCourse(courseId, em);
 		em.getTransaction().begin();
 		course.getEnrolledUsers().addAll(newUsers);
 		em.getTransaction().commit();
 		em.close();
+	}
+	
+	@Override
+	public void enrollUser(long courseId, User newUser){
+		List<User> userList = new ArrayList<User>();
+		userList.add(newUser);
+		enrollUsers(courseId, userList);
+	}
+	
+	@Override
+	public void enrollUser(Course course, User newUser){
+		enrollUser(course, newUser);
+		course.getEnrolledUsers().add(newUser);
 	}
 	
 	@Override
@@ -79,7 +106,7 @@ public class CourseDaoJpaImpl implements CourseDao{
 		return getCourse(courseId).getEnrolledUsers();
 	}
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	@Override
 	public List<User> getEnrolledUsers(String courseName){
 		EntityManager em = factory.createEntityManager();
@@ -94,13 +121,15 @@ public class CourseDaoJpaImpl implements CourseDao{
 			throw new RuntimeException("Could not find course with name " + courseName + ".");
 		}
 		return courses.get(0).getEnrolledUsers();
-	}
+	}*/
 
 	public static void main(String[] args){
 		CourseDaoJpaImpl courseDao = new CourseDaoJpaImpl();
 		System.out.println(courseDao.getAllCourses());
-		courseDao.clearAllCourses();
-		System.out.println(courseDao.getAllCourses());
+		//courseDao.clearAllCourses();
+		//System.out.println(courseDao.getAllCourses());
+		UserDao userDao = new UserDaoJpaImpl();
+		System.out.println(userDao.getAllUsers());
 	}
 
 

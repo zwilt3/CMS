@@ -54,7 +54,7 @@ public class UserDaoJpaImpl implements UserDao{
 		List<User> users = q.getResultList();
 		em.close();
 		if (users.size() != 1){
-			throw new RuntimeException("Could not find user with email " + email + ".");
+			return null;
 		}
 		return users.get(0);
 	}

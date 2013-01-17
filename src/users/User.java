@@ -39,6 +39,13 @@ public class User implements Serializable{
 	public String toString(){
 		return name;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if (!(o instanceof User)) return false;
+		User that = (User)o;
+		return this.name.equals(that.name);
+	}
 
 
 	/*

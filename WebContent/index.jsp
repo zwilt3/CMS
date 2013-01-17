@@ -23,6 +23,7 @@
               <li class="active"><a href="#">Home</a></li>
               <li><a href="<%=Links.CREATE_COURSE%>">Create Course</a></li>
               <li><a href="<%=Links.CREATE_USER%>">Create User</a></li>
+              <li><a href="<%=Links.ENROLL_USERS_IN_COURSE%>">Enroll Users in Course</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
